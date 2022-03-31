@@ -1,3 +1,4 @@
+from cProfile import label
 import logging
 import math
 from typing import Iterable
@@ -79,3 +80,31 @@ def scatter_plot(
 
     plt.show()
 
+
+def threed_scatter(
+    data_frame: pandas.DataFrame,
+    features: Iterable,
+    genres: Iterable
+):
+    """
+    Generates a 3D scatter plot from the given genres and 3 features
+    """
+
+    fig = plt.figure()
+    ax = fig.add_subplot(projection="3d")
+
+    ax.set_xlabel(features[0])
+    ax.set_ylabel(features[1])
+    ax.set_zlabel(features[2])
+    ax.grid()
+
+    for genre in genres:
+        genre_specific_data = data_frame[data_frame['Genre'] == genre]
+        x = genre_specific_data[features[0]]
+        y = genre_specific_data[features[1]]
+        z = genre_specific_data[features[2]]
+
+        ax.scatter(x,y,z,label=f"{genre}")
+
+    ax.legend()
+    plt.show()
