@@ -1,5 +1,6 @@
 from plotting import *
 from data_handling import *
+
 from descriptive_statistics import *
 
 X = read_genre_class_data(GENRE_CLASS_DATA_30S)
@@ -10,4 +11,3 @@ genres = ["blues", "metal", "jazz", "classical", "rock", "pop", "country", "hiph
 
 principal_components_reduction(X, genres)
 #threed_scatter(X, features=features, genres=genres)
-
