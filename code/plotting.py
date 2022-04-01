@@ -5,6 +5,7 @@ from typing import Iterable
 
 import matplotlib.pyplot as plt
 import pandas
+import sklearn.metrics
 
 
 def single_scatter_plot(
@@ -107,4 +108,28 @@ def threed_scatter(
         ax.scatter(x,y,z,label=f"{genre}")
 
     ax.legend()
+    plt.show()
+
+
+def confusion_matrix(
+    actual_genres: Iterable,
+    predicted_genres: Iterable,
+):
+    labels = set(actual_genres)
+
+    errors = actual_genres != predicted_genres
+    error_percentage = sum(errors) / len(actual_genres) * 100
+
+    confusion_matrix = sklearn.metrics.confusion_matrix(
+        y_true=actual_genres,
+        y_pred=predicted_genres,
+    )
+
+    disp = sklearn.metrics.ConfusionMatrixDisplay(
+        confusion_matrix=confusion_matrix,
+        display_labels=labels,
+    )
+
+    disp.plot()
+    plt.title(f"Error Rate: {error_percentage:.2f}%")
     plt.show()
