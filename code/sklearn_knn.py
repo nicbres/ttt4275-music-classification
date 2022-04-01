@@ -12,4 +12,3 @@ def predict(
     knn_classifier.fit(X=training_data.x, y=training_data.y)
 
     return knn_classifier.predict(X=test_data.x)
-

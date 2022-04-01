@@ -10,10 +10,10 @@ import pandas as pd
 import mappings
 
 
-DATA_DIR = Path() / '..' / 'resources' / 'data'
-GENRE_CLASS_DATA_5S = DATA_DIR / 'GenreClassData_5s.txt'
-GENRE_CLASS_DATA_10S = DATA_DIR / 'GenreClassData_10s.txt'
-GENRE_CLASS_DATA_30S = DATA_DIR / 'GenreClassData_30s.txt'
+DATA_DIR = Path() / ".." / "resources" / "data"
+GENRE_CLASS_DATA_5S = DATA_DIR / "GenreClassData_5s.txt"
+GENRE_CLASS_DATA_10S = DATA_DIR / "GenreClassData_10s.txt"
+GENRE_CLASS_DATA_30S = DATA_DIR / "GenreClassData_30s.txt"
 
 
 @dataclass
@@ -26,7 +26,7 @@ def read_genre_class_data(
     file_path: Path,
 ) -> pd.DataFrame:
     if file_path.is_file() is False:
-        raise ValueError(f'Given file path is not a file ({file_path})')
+        raise ValueError(f"Given file path is not a file ({file_path})")
     return pd.read_table(file_path)
 
 
@@ -47,7 +47,7 @@ def reduce_features(
     data_frame: pd.DataFrame,
     features: Iterable,
 ) -> pd.DataFrame:
-    return data_frame.loc[:,features]
+    return data_frame.loc[:, features]
 
 
 def prepare_data(
@@ -66,7 +66,7 @@ def prepare_data(
     """
 
     if genres is not None:
-        available_genres = set(data_frame['Genre'])
+        available_genres = set(data_frame["Genre"])
         if any([genre not in available_genres for genre in genres]):
             raise ValueError("One of the specified genres is invalid")
     else:
@@ -78,8 +78,8 @@ def prepare_data(
     else:
         features = mappings.MUSIC_FEATURES_ALL
 
-    training_df = data_frame[data_frame['Type'] == 'Train']
-    test_df = data_frame[data_frame['Type'] == 'Test']
+    training_df = data_frame[data_frame["Type"] == "Train"]
+    test_df = data_frame[data_frame["Type"] == "Test"]
 
     training_data = Dataset(
         x=reduce_features(reduce_genres(training_df, genres), features),
@@ -110,7 +110,6 @@ def split_audio_data_into_segments(
     samples_per_segment = sample_rate * segment_length
     number_of_segments = len(audio_data) // samples_per_segment
 
-    audio_data = audio_data[:number_of_segments * samples_per_segment]
+    audio_data = audio_data[: number_of_segments * samples_per_segment]
 
     return np.reshape(audio_data, (number_of_segments, samples_per_segment))
-
