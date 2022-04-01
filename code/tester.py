@@ -1,5 +1,6 @@
 from plotting import *
 from data_handling import *
+from descriptive_statistics import *
 
 from descriptive_statistics import *
 
