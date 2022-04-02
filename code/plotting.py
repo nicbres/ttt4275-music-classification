@@ -83,7 +83,11 @@ def scatter_plot(
     plt.show()
 
 
-def threed_scatter(data_frame: pandas.DataFrame, features: Iterable, genres: Iterable):
+def threed_scatter(
+    data_frame: pandas.DataFrame,
+    features: Iterable,
+    genres: Iterable,
+):
     """
     Generates a 3D scatter plot from the given genres and 3 features
     """
@@ -112,7 +116,7 @@ def confusion_matrix(
     actual_genres: Iterable,
     predicted_genres: Iterable,
 ):
-    labels = set(actual_genres)
+    labels = list(set(actual_genres))
 
     errors = actual_genres != predicted_genres
     error_percentage = sum(errors) / len(actual_genres) * 100
@@ -120,6 +124,7 @@ def confusion_matrix(
     confusion_matrix = sklearn.metrics.confusion_matrix(
         y_true=actual_genres,
         y_pred=predicted_genres,
+        labels=labels,
     )
 
     disp = sklearn.metrics.ConfusionMatrixDisplay(
