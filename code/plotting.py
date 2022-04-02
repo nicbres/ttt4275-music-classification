@@ -5,6 +5,7 @@ from typing import Iterable
 
 import matplotlib.pyplot as plt
 import pandas
+import sklearn.metrics
 
 
 def single_scatter_plot(
@@ -28,11 +29,11 @@ def single_scatter_plot(
     ax.grid()
 
     for genre in genres:
-        genre_specific_data = data_frame[data_frame['Genre'] == genre]
+        genre_specific_data = data_frame[data_frame["Genre"] == genre]
         x = genre_specific_data[features[0]]
         y = genre_specific_data[features[1]]
 
-        ax.scatter(x,y, label=f"{genre}")
+        ax.scatter(x, y, label=f"{genre}")
 
     ax.legend()
 
@@ -43,13 +44,13 @@ def scatter_plot(
     genres: Iterable,
 ):
     """Generates a scatter plot from the given genres and features."""
-    
+
     number_of_features = len(features)
     number_of_subplots = math.factorial(number_of_features - 1)
 
     number_of_subplots_cols = int(math.sqrt(number_of_subplots))
     number_of_subplots_rows = number_of_subplots // number_of_subplots_cols
-    
+
     logging.debug(f"Plot Shape: {number_of_subplots_rows}, {number_of_subplots_cols}")
     fig, axs = plt.subplots(number_of_subplots_rows, number_of_subplots_cols)
     plt.set_loglevel("info")
@@ -60,7 +61,8 @@ def scatter_plot(
         for i in range(number_of_features - 1):
             for j in range(i + 1, number_of_features):
                 subplot_index_row, subplot_index_col = divmod(
-                    plot_index, number_of_subplots_cols,
+                    plot_index,
+                    number_of_subplots_cols,
                 )
                 single_scatter_plot(
                     data_frame=data_frame,
@@ -84,7 +86,7 @@ def scatter_plot(
 def threed_scatter(
     data_frame: pandas.DataFrame,
     features: Iterable,
-    genres: Iterable
+    genres: Iterable,
 ):
     """
     Generates a 3D scatter plot from the given genres and 3 features
@@ -99,12 +101,37 @@ def threed_scatter(
     ax.grid()
 
     for genre in genres:
-        genre_specific_data = data_frame[data_frame['Genre'] == genre]
+        genre_specific_data = data_frame[data_frame["Genre"] == genre]
         x = genre_specific_data[features[0]]
         y = genre_specific_data[features[1]]
         z = genre_specific_data[features[2]]
 
-        ax.scatter(x,y,z,label=f"{genre}")
+        ax.scatter(x, y, z, label=f"{genre}")
 
     ax.legend()
+    plt.show()
+
+
+def confusion_matrix(
+    actual_genres: Iterable,
+    predicted_genres: Iterable,
+):
+    labels = list(set(actual_genres))
+
+    errors = actual_genres != predicted_genres
+    error_percentage = sum(errors) / len(actual_genres) * 100
+
+    confusion_matrix = sklearn.metrics.confusion_matrix(
+        y_true=actual_genres,
+        y_pred=predicted_genres,
+        labels=labels,
+    )
+
+    disp = sklearn.metrics.ConfusionMatrixDisplay(
+        confusion_matrix=confusion_matrix,
+        display_labels=labels,
+    )
+
+    disp.plot()
+    plt.title(f"Error Rate: {error_percentage:.2f}%")
     plt.show()
