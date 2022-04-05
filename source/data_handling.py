@@ -21,6 +21,14 @@ GENRE_CLASS_DATA_30S = DATA_DIR / "GenreClassData_30s.txt"
 class Dataset:
     x: pd.DataFrame
     y: pd.DataFrame
+    track_ids: pd.DataFrame
+
+    @property
+    def data_frame(self):
+        combined_dataframe = self.x
+        combined_dataframe["Genre"] = self.y
+        combined_dataframe["Track ID"] = self.track_ids
+        return combined_dataframe
 
 
 def read_genre_class_data(
@@ -82,14 +90,18 @@ def prepare_data(
     training_df = data_frame[data_frame["Type"] == "Train"]
     test_df = data_frame[data_frame["Type"] == "Test"]
 
+    genre_reduced_train_data = reduce_genres(training_df, genres)
     training_data = Dataset(
-        x=reduce_features(reduce_genres(training_df, genres), features),
-        y=reduce_genres(training_df, genres)["Genre"],
+        x=reduce_features(genre_reduced_train_data, features),
+        y=genre_reduced_train_data["Genre"],
+        track_ids=genre_reduced_train_data["Track ID"],
     )
 
+    genre_reduced_test_data = reduce_genres(test_df, genres)
     test_data = Dataset(
-        x=reduce_features(reduce_genres(test_df, genres), features),
-        y=reduce_genres(test_df, genres)["Genre"],
+        x=reduce_features(genre_reduced_test_data, features),
+        y=genre_reduced_test_data["Genre"],
+        track_ids=genre_reduced_test_data["Track ID"],
     )
 
     return training_data, test_data
