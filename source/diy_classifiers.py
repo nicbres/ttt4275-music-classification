@@ -6,8 +6,7 @@ from statistics import mode
 import source.data_handling as dh
 
 def p_norm(p, vec):
-    vec_powered = [vec[i]**p for i in range(len(vec))]
-    return (sum(vec_powered)) ** 1/p
+    return np.sum(vec**p) ** (1/p)
 
 def kNN(
     k,
