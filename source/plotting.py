@@ -6,7 +6,11 @@ from typing import Iterable
 import matplotlib.pyplot as plt
 import pandas
 import sklearn.metrics
+import numpy as np
 
+import source.diy_classifiers
+import source.descriptive_statistics
+import source.sklearn_knn
 
 def single_scatter_plot(
     data_frame: pandas.DataFrame,
@@ -118,8 +122,7 @@ def confusion_matrix(
 ):
     labels = list(set(actual_genres))
 
-    errors = actual_genres != predicted_genres
-    error_percentage = sum(errors) / len(actual_genres) * 100
+    error_percentage = source.descriptive_statistics.classifier_error_rate(predicted_genres, actual_genres)
 
     confusion_matrix = sklearn.metrics.confusion_matrix(
         y_true=actual_genres,
@@ -135,3 +138,41 @@ def confusion_matrix(
     disp.plot()
     plt.title(f"Error Rate: {error_percentage:.2f}%")
     plt.show()
+
+def error_rates_vs_params(ks, ps, training_data, test_data):
+
+    actual_genres = test_data.y
+
+    error_rate_ks = np.empty((len(ks,)))
+    error_rate_ps = np.empty((len(ps,)))
+
+    for i in range(len(ks)):
+        predicted_genres = source.sklearn_knn.predict(training_data, test_data,  k=ks[i], p=2)
+        error_percentage = source.descriptive_statistics.classifier_error_rate(predicted_genres, actual_genres)
+        error_rate_ks[i] = error_percentage
+        
+    for j in range(len(ps)):
+        predicted_genres = source.sklearn_knn.predict(training_data, test_data,  k=5, p=ps[j])
+        error_percentage = source.descriptive_statistics.classifier_error_rate(predicted_genres, actual_genres)
+        error_rate_ps[j] = error_percentage
+    
+    fig, axs = plt.subplots(1, 2)
+
+    ax1 = axs[0]
+    ax2 = axs[1]
+
+    ax1.set_xlabel("k - Number of NN considered")
+    ax1.set_ylabel("Error percentage [%]")
+
+    ax2.set_xlabel("p - order of Minkowski norm")
+    ax2.set_ylabel("Error percentage [%]")
+
+    ax1.plot(ks, error_rate_ks)
+    ax2.plot(ps, error_rate_ps)
+
+    ax1.grid()
+    ax2.grid()
+
+    plt.title("Error rate as a function of k and order of Minkowski norm")
+    plt.show()
+    
