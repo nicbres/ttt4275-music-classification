@@ -1,6 +1,13 @@
-from typing import Union, Iterable
+import os
+from pathlib import Path
+from typing import Iterable, Optional, Union
 
+import numpy as np
 import pandas as pd
+
+import source.feature_extraction
+import source.data_handling
+
 
 GENRES = {
     1: "pop",
@@ -103,3 +110,71 @@ MUSIC_FEATURES_ALL = get_features_from_indices(range(3, 66))
 MUSIC_FEATURES_MEANS = list(
     filter(lambda feature: "mean" in feature, MUSIC_FEATURES_ALL)
 )
+
+
+def _find_match(
+    data_frame: pd.DataFrame,
+    file_path: Path,
+):
+    audio_data, sample_rate = source.data_handling.read_wav_file(
+        file_path=file_path,
+    )
+
+    rms_mean, _ = source.feature_extraction.get_rmse(
+        audio_data=audio_data,
+    )
+    tempo = source.feature_extraction.get_tempo(
+        audio_data=audio_data,
+        sample_rate=sample_rate
+    )
+
+    distance = np.sqrt(
+        (data_frame['rmse_mean'] - float(rms_mean)) ** 2 + (data_frame['tempo'] - float(tempo)) ** 2
+    )
+
+    return data_frame.iloc[np.argmin(distance)]['Track ID']
+
+
+def get_track_id_lookup_table(
+    data_frame: pd.DataFrame,
+    music_lib_path: Path,
+):
+    columns = ["Track ID", "FileName"]
+    lookup_table = pd.DataFrame(columns=columns)
+
+    for genre in set(data_frame['Genre']):
+        genre_path = music_lib_path / genre
+        for file in os.listdir(genre_path):
+            if ".wav" in file:
+                track_id = _find_match(
+                    data_frame=data_frame[data_frame['Genre'] == genre],
+                    file_path=genre_path / file,
+                )
+                new_entry = pd.DataFrame(data=[[track_id, file]], columns=columns)
+                lookup_table = pd.concat((lookup_table, new_entry))
+
+    return lookup_table
+
+
+def write_lookup_table_to_text(
+    data_frame: pd.DataFrame,
+    music_lib_path: Path,
+    output_path: Optional[Path] = None,
+) -> pd.DataFrame:
+    if output_path is None:
+        output_path = Path() / "map_data.txt"
+
+    with open(output_path, 'w') as map_id_to_file:
+        lookup_table = get_track_id_lookup_table(
+            data_frame=data_frame,
+            music_lib_path=music_lib_path,
+        )
+
+        lookup_table.to_csv(
+            path_or_buf=map_id_to_file,
+            sep='\t',
+        )
+
+_file_path = os.path.abspath(os.path.dirname(__file__))
+MAP_DATA_FILE = Path(_file_path) / 'map_data.txt'
+
