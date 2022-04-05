@@ -3,7 +3,7 @@ import heapq
 from pyexpat import features
 from statistics import mode
 
-import data_handling
+import source.data_handling as dh
 
 def p_norm(p, vec):
     vec_powered = [vec[i]**p for i in range(len(vec))]
@@ -11,8 +11,8 @@ def p_norm(p, vec):
 
 def kNN(
     k,
-    train_data: data_handling.Dataset, 
-    test_data: data_handling.Dataset,
+    train_data: dh.Dataset, 
+    test_data: dh.Dataset,
     p=None,
     distance_metric=None
 ):
@@ -40,6 +40,7 @@ def kNN(
     predicted_genres = np.empty((N_test, ), dtype=object)
 
     for i in range(N_test):
+        print("Bruh = 1")
         
         # Compute the euclidean distances to all training points
         distances = [p_norm(p,test_table.iloc[i]-training_table.iloc[j]) for j in range(N_train)]
@@ -60,6 +61,3 @@ def kNN(
         predicted_genres[i] = most_frequent_neighbour
 
     return predicted_genres
-
-
-    
