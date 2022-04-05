@@ -40,7 +40,6 @@ def kNN(
     predicted_genres = np.empty((N_test, ), dtype=object)
 
     for i in range(N_test):
-        print("Bruh = 1")
         
         # Compute the euclidean distances to all training points
         distances = [p_norm(p,test_table.iloc[i]-training_table.iloc[j]) for j in range(N_train)]

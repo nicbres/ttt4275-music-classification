@@ -9,8 +9,9 @@ import pandas as pd
 
 import source.mappings
 
+_file_path = os.path.abspath(os.path.dirname(__file__))
 
-DATA_DIR = Path() / ".." / "resources" / "data"
+DATA_DIR = Path(_file_path) / ".." / "resources" / "data"
 GENRE_CLASS_DATA_5S = DATA_DIR / "GenreClassData_5s.txt"
 GENRE_CLASS_DATA_10S = DATA_DIR / "GenreClassData_10s.txt"
 GENRE_CLASS_DATA_30S = DATA_DIR / "GenreClassData_30s.txt"
@@ -70,13 +71,13 @@ def prepare_data(
         if any([genre not in available_genres for genre in genres]):
             raise ValueError("One of the specified genres is invalid")
     else:
-        genres = mappings.GENRES.values()
+        genres = source.mappings.GENRES.values()
 
     if features is not None:
         if any([feature not in data_frame.keys() for feature in features]):
             raise ValueError("One of the specified features is invalid")
     else:
-        features = mappings.MUSIC_FEATURES_ALL
+        features = source.mappings.MUSIC_FEATURES_ALL
 
     training_df = data_frame[data_frame["Type"] == "Train"]
     test_df = data_frame[data_frame["Type"] == "Test"]
