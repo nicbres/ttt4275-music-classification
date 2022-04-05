@@ -230,6 +230,16 @@ def _classified_data_scatter_plot(
         classified_correctly = np.flatnonzero(class_is_correct.iloc[indices] == True)
         classified_falsely = np.flatnonzero(class_is_correct.iloc[indices] == False)
 
+        if log_misclassified:
+            lookup_table = pandas.read_table(source.mappings.MAP_DATA_FILE)
+            for misclassified_index in classified_falsely:
+                entry = test_data.data_frame.iloc[indices[misclassified_index]]
+                actual_genre = entry["Genre"]
+                track_id = entry["Track ID"]
+                file_name = lookup_table[lookup_table["Track ID"] == track_id]["FileName"].to_string(index=False)
+                predicted_genre = predicted_genres[indices[misclassified_index]]
+                logging.info(f"ID: {track_id} ({file_name}) misclassified as {predicted_genre}")
+
         x = test_data.x[features[0]]
         y = test_data.x[features[1]]
 
@@ -302,7 +312,7 @@ def misclassifications_scatter_plot(
                 features=[features[i], features[j]],
                 genres=genres,
                 ax=axes,
-                log_misclassified=log_misclassified,
+                log_misclassified=log_misclassified if plot_index == 0 else False,
             )
             axes.legend()
             plot_index += 1

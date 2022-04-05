@@ -27,6 +27,7 @@ class Dataset:
     def data_frame(self):
         combined_dataframe = self.x
         combined_dataframe["Genre"] = self.y
+        combined_dataframe["Track ID"] = self.track_ids
         return combined_dataframe
 
 

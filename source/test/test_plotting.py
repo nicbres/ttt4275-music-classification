@@ -1,3 +1,5 @@
+import logging
+
 import pytest
 
 import source.data_handling
@@ -87,7 +89,9 @@ def test_2d_scatter_plot(features):
         source.mappings.get_features_from_indices([11, 42, 7, 41, 43]),
     ],
 )
-def test_misclassifications_scatter_plot(features):
+def test_misclassifications_scatter_plot(features, caplog):
+    caplog.set_level(logging.INFO)
+
     data = source.data_handling.read_genre_class_data(
         file_path=source.data_handling.GENRE_CLASS_DATA_30S,
     )
@@ -105,5 +109,5 @@ def test_misclassifications_scatter_plot(features):
         predicted_genres=predicted_genres,
         features=features,
         genres=["pop", "classical"],
-        log_misclassified=False,
+        log_misclassified=True,
     )
