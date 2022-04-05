@@ -4,19 +4,51 @@ import math
 from typing import Iterable
 
 import matplotlib.pyplot as plt
+import numpy as np
 import pandas
 import sklearn.metrics
 import numpy as np
 
+import source.data_handling
 import source.diy_classifiers
 import source.descriptive_statistics
 import source.sklearn_knn
+
+
+_COLORS = {
+    "pop": "tab:blue",
+    "metal": "tab:orange",
+    "disco": "tab:purple",
+    "blues": "tab:brown",
+    "reggae": "tab:pink",
+    "classical": "tab:grey",
+    "rock": "tab:cyan",
+    "hiphop": "gold",
+    "country": "darkblue",
+    "jazz": "mediumaquamarine",
+}
+
+_MARKERS = {
+    "pop": "o",
+    "metal": "v",
+    "disco": "^",
+    "blues": "<",
+    "reggae": ">",
+    "classical": "p",
+    "rock": "*",
+    "hiphop": "X",
+    "country": "d",
+    "jazz": "s",
+}
+
 
 def single_scatter_plot(
     data_frame: pandas.DataFrame,
     features: Iterable,
     genres: Iterable,
-    ax,
+    use_color_dict: bool,
+    ax: plt.axis,
+    marker: str = "o",
 ):
     """Generates a scatter plot from the given genres and features.
 
@@ -37,52 +69,56 @@ def single_scatter_plot(
         x = genre_specific_data[features[0]]
         y = genre_specific_data[features[1]]
 
-        ax.scatter(x, y, label=f"{genre}")
-
-    ax.legend()
+        color = _COLORS[genre] if use_color_dict else None
+        ax.scatter(x, y, color=color, marker=marker, label=f"{genre}")
 
 
 def scatter_plot(
     data_frame: pandas.DataFrame,
     features: Iterable,
     genres: Iterable,
+    use_color_dict: bool = False,
 ):
     """Generates a scatter plot from the given genres and features."""
 
     number_of_features = len(features)
-    number_of_subplots = math.factorial(number_of_features - 1)
+    number_of_subplots = np.sum(np.arange(number_of_features))
 
     number_of_subplots_cols = int(math.sqrt(number_of_subplots))
-    number_of_subplots_rows = number_of_subplots // number_of_subplots_cols
+    while number_of_subplots_cols > 0:
+        number_of_subplots_rows, modulo = divmod(number_of_subplots, number_of_subplots_cols)
+        if modulo == 0:
+            break
+        number_of_subplots_cols -= 1
 
     logging.debug(f"Plot Shape: {number_of_subplots_rows}, {number_of_subplots_cols}")
     fig, axs = plt.subplots(number_of_subplots_rows, number_of_subplots_cols)
     plt.set_loglevel("info")
 
-    if number_of_subplots_rows > 1:
-        logging.debug("Generating multiple scatter plots")
-        plot_index = 0
-        for i in range(number_of_features - 1):
-            for j in range(i + 1, number_of_features):
-                subplot_index_row, subplot_index_col = divmod(
-                    plot_index,
-                    number_of_subplots_cols,
-                )
-                single_scatter_plot(
-                    data_frame=data_frame,
-                    features=[features[i], features[j]],
-                    genres=genres,
-                    ax=axs[subplot_index_row, subplot_index_col],
-                )
-                plot_index += 1
-    else:
-        logging.debug("Generating single scatter plots")
-        single_scatter_plot(
-            data_frame=data_frame,
-            features=[features[0], features[1]],
-            genres=genres,
-            ax=axs,
-        )
+    logging.debug("Generating multiple scatter plots")
+    plot_index = 0
+    for i in range(number_of_features - 1):
+        for j in range(i + 1, number_of_features):
+            subplot_index_row, subplot_index_col = divmod(
+                plot_index,
+                number_of_subplots_cols,
+            )
+            if number_of_subplots == 1:
+                axes = axs
+            elif number_of_subplots_cols == 1:
+                axes = axs[subplot_index_row]
+            else:
+                axes = axs[subplot_index_row, subplot_index_col]
+
+            single_scatter_plot(
+                data_frame=data_frame,
+                features=[features[i], features[j]],
+                genres=genres,
+                ax=axes,
+                use_color_dict=use_color_dict,
+            )
+            axes.legend()
+            plot_index += 1
 
     plt.show()
 
@@ -139,6 +175,7 @@ def confusion_matrix(
     plt.title(f"Error Rate: {error_percentage:.2f}%")
     plt.show()
 
+
 def error_rates_vs_params(ks, ps, training_data, test_data):
 
     actual_genres = test_data.y
@@ -176,3 +213,99 @@ def error_rates_vs_params(ks, ps, training_data, test_data):
     plt.title("Error rate as a function of k and order of Minkowski norm")
     plt.show()
     
+
+def _classified_data_scatter_plot(
+    test_data: source.data_handling.Dataset,
+    predicted_genres: Iterable,
+    features: Iterable,
+    genres: Iterable,
+    ax: plt.axis,
+    log_misclassified: bool,
+):
+    class_is_correct = test_data.y == predicted_genres
+
+    for genre in genres:
+        indices = np.flatnonzero(test_data.data_frame["Genre"] == genre)
+
+        classified_correctly = np.flatnonzero(class_is_correct.iloc[indices] == True)
+        classified_falsely = np.flatnonzero(class_is_correct.iloc[indices] == False)
+
+        x = test_data.x[features[0]]
+        y = test_data.x[features[1]]
+
+        ax.scatter(
+            x.iloc[indices[classified_correctly]],
+            y.iloc[indices[classified_correctly]],
+            color="g",
+            marker=_MARKERS[genre],
+            label=f"Correct {genre}",
+        )
+        ax.scatter(
+            x.iloc[indices[classified_falsely]],
+            y.iloc[indices[classified_falsely]],
+            color="r",
+            marker=_MARKERS[genre],
+            label=f"Misclassified {genre}",
+        )
+
+
+def misclassifications_scatter_plot(
+    training_data: source.data_handling.Dataset,
+    test_data: source.data_handling.Dataset,
+    predicted_genres: Iterable,
+    features:Iterable,
+    genres: Iterable,
+    use_color_dict: bool = True,
+    log_misclassified: bool = False,
+):
+    """Generates a scatter plot from the given genres and features."""
+    number_of_features = len(features)
+    number_of_subplots = np.sum(np.arange(number_of_features))
+     
+    number_of_subplots_cols = int(math.sqrt(number_of_subplots))
+    while number_of_subplots_cols > 0:
+        number_of_subplots_rows, modulo = divmod(number_of_subplots, number_of_subplots_cols)
+        if modulo == 0:
+            break
+        number_of_subplots_cols -= 1
+
+    logging.debug(f"Plot Shape: {number_of_subplots_rows}, {number_of_subplots_cols}")
+    fig, axs = plt.subplots(number_of_subplots_rows, number_of_subplots_cols)
+    plt.set_loglevel("info")
+
+    logging.debug("Generating multiple scatter plots")
+    plot_index = 0
+    for i in range(number_of_features - 1):
+        for j in range(i + 1, number_of_features):
+            subplot_index_row, subplot_index_col = divmod(
+                plot_index,
+                number_of_subplots_cols,
+            )
+            if number_of_subplots == 1:
+                axes = axs
+            elif number_of_subplots_cols == 1:
+                axes = axs[subplot_index_row]
+            else:
+                axes = axs[subplot_index_row, subplot_index_col]
+
+            single_scatter_plot(
+                data_frame=training_data.data_frame,
+                features=[features[i], features[j]],
+                genres=genres,
+                use_color_dict=use_color_dict,
+                ax=axes,
+                marker="1",
+            )
+            _classified_data_scatter_plot(
+                test_data=test_data,
+                predicted_genres=predicted_genres,
+                features=[features[i], features[j]],
+                genres=genres,
+                ax=axes,
+                log_misclassified=log_misclassified,
+            )
+            axes.legend()
+            plot_index += 1
+
+    plt.show()
+
