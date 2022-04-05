@@ -2,6 +2,7 @@ import source.plotting
 import source.data_handling
 import source.descriptive_statistics
 import source.diy_classifiers
+import numpy as np
 
 data_version = source.data_handling.GENRE_CLASS_DATA_30S
 data_set = source.data_handling.read_genre_class_data(data_version)
@@ -20,7 +21,7 @@ print(type(data_set))
 k = 5
 features_task_1 = ["spectral_rolloff_mean", "tempo", "spectral_centroid_mean", "mfcc_1_mean"]
 
-ks = np.arange(10) + 1
+ks = np.arange(10)*3 + 1
 ps = np.arange(10) + 1
 
 print(ks)

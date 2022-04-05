@@ -1,11 +1,7 @@
-from data_handling import *
+
 import numpy as np
 import matplotlib.pyplot as plt
 from sklearn import preprocessing
-
-
-X = read_genre_class_data(GENRE_CLASS_DATA_30S)
-cols = ["spectral_rolloff_mean", "mfcc_1_mean", "spectral_centroid_mean", "tempo"]
 
 
 def correlations_plot(X, colset=None, colstart=None, colend=None):
@@ -73,3 +69,8 @@ def principal_components_reduction(X, genres, features=None, feature_start=None,
     
     ax.legend()
     plt.show()
+
+def classifier_error_rate(predicted_genres, actual_genres):
+    errors = actual_genres != predicted_genres
+    error_percentage = sum(errors) / len(actual_genres) * 100
+    return error_percentage
