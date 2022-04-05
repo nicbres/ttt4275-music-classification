@@ -1,20 +1,16 @@
 import numpy as np
-import heapq
-from pyexpat import features
 from statistics import mode
 
 import source.data_handling as dh
 
 def p_norm(p, vec):
-    vec_powered = [vec[i]**p for i in range(len(vec))]
-    return (sum(vec_powered)) ** 1/p
+    return np.sum(vec**p) ** (1/p)
 
 def kNN(
-    k,
     train_data: dh.Dataset, 
     test_data: dh.Dataset,
-    p=None,
-    distance_metric=None
+    k: int = 5,
+    p: float = 2,
 ):
     """
     Inputs:     k - number of Nearest Neighbours to be considered
@@ -25,9 +21,6 @@ def kNN(
                 distance_metric - optional arg for playing with different disdence matrics
     """
 
-    if p is None:
-        p = 2
-    
     # TODO: play around with other metrics
 
     N_train = np.shape(train_data.x)[0]
@@ -40,18 +33,14 @@ def kNN(
     predicted_genres = np.empty((N_test, ), dtype=object)
 
     for i in range(N_test):
-        
         # Compute the euclidean distances to all training points
         distances = [p_norm(p,test_table.iloc[i]-training_table.iloc[j]) for j in range(N_train)]
 
-        # Find the k smallest distances
-        k_smallest = heapq.nsmallest(int(k), distances)
-
-        # Extract their indices
-        kNN_inds = [distances.index(k_smallest[j]) for j in range(len(k_smallest))]
+        # Get indices of k-smallest distances
+        smallest_indices = np.argsort(distances)[:k]
 
         # Extract the Genres of the distance_inds from the training data_frame
-        genres_of_kNN = training_genres[kNN_inds]
+        genres_of_kNN = training_genres.iloc[smallest_indices]
 
         # Pick the most frequent genre
         most_frequent_neighbour = mode(genres_of_kNN)

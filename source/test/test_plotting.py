@@ -111,3 +111,20 @@ def test_misclassifications_scatter_plot(features, caplog):
         genres=["pop", "classical"],
         log_misclassified=True,
     )
+
+
+@pytest.mark.parametrize("features",
+    [
+        source.mappings.get_features_from_indices([11, 42, 7, 41]),
+    ],
+)
+def test_feature_distribution_histogram(features):
+    data = source.data_handling.read_genre_class_data(
+        file_path=source.data_handling.GENRE_CLASS_DATA_30S,
+    )
+
+    source.plotting.feature_distribution_histogram(
+        data_frame=data,
+        features=features,
+        genres=["pop", "disco", "metal", "classical"],
+    )

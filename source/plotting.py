@@ -319,3 +319,24 @@ def misclassifications_scatter_plot(
 
     plt.show()
 
+
+def feature_distribution_histogram(
+    data_frame: pandas.DataFrame,
+    features: Iterable,
+    genres: Iterable,
+    nr_of_bins: int = 10,
+):
+    fig, axs = plt.subplots(2, 2)
+
+    for index, feature in enumerate(features):
+        row_index, col_index = divmod(index, 2)
+        axs[row_index, col_index].set_title(feature)
+
+        for genre in genres:
+            axs[row_index, col_index].hist(data_frame[data_frame["Genre"] == genre][feature], nr_of_bins, density=True, histtype='bar', color=_COLORS[genre], label=genre)
+
+        axs[row_index, col_index].legend()
+        axs[row_index, col_index].grid()
+
+    fig.tight_layout()
+    plt.show()
