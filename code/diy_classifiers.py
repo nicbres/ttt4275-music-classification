@@ -1,20 +1,21 @@
-from pyexpat import features
 import numpy as np
 import heapq
+from pyexpat import features
 from statistics import mode
 
+import data_handling
 
 def p_norm(p, vec):
     vec_powered = [vec[i]**p for i in range(len(vec))]
     return (sum(vec_powered)) ** 1/p
 
-def diy_kNN(k,
-            data_frame, 
-            test_frame,
-            feature_set,
-            p=None,
-            distance_metric=None
-            ):
+def kNN(
+    k,
+    train_data: data_handling.Dataset, 
+    test_data: data_handling.Dataset,
+    p=None,
+    distance_metric=None
+):
     """
     Inputs:     k - number of Nearest Neighbours to be considered
                 data_frame - pandas dataframe of the training set
@@ -29,13 +30,13 @@ def diy_kNN(k,
     
     # TODO: play around with other metrics
 
-    N_train = np.shape(data_frame)[0]
-    N_test = np.shape(test_frame)[0]
+    N_train = np.shape(train_data.x)[0]
+    N_test = np.shape(test_data.x)[0]
 
-    training_table = data_frame[feature_set]
-    training_genres = data_frame["Genre"]
+    training_table = train_data.x
+    training_genres = train_data.y
 
-    test_table = test_frame[feature_set]
+    test_table = test_data.x
     predicted_genres = np.empty((N_test, ), dtype=object)
 
     for i in range(N_test):
