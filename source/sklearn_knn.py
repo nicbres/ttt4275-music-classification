@@ -1,7 +1,7 @@
 import pandas as pd
 from sklearn.neighbors import KNeighborsClassifier
 
-import data_handling as dh
+import source.data_handling as dh
 
 
 def predict(

@@ -7,7 +7,7 @@ import librosa
 import numpy as np
 import pandas as pd
 
-import mappings
+import source.mappings
 
 
 DATA_DIR = Path() / ".." / "resources" / "data"
