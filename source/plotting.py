@@ -156,7 +156,7 @@ def confusion_matrix(
     actual_genres: Iterable,
     predicted_genres: Iterable,
 ):
-    labels = list(set(actual_genres))
+    labels = np.sort(list(set(actual_genres)))
 
     error_percentage = source.descriptive_statistics.classifier_error_rate(predicted_genres, actual_genres)
 
@@ -171,7 +171,9 @@ def confusion_matrix(
         display_labels=labels,
     )
 
-    disp.plot()
+    disp.plot(
+        xticks_rotation='vertical',
+    )
     plt.title(f"Error Rate: {error_percentage:.2f}%")
     plt.show()
 
