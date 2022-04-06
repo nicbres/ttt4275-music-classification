@@ -30,6 +30,9 @@ class Dataset:
         combined_dataframe["Track ID"] = self.track_ids
         return combined_dataframe
 
+    def __len__(self):
+        return np.shape(self.x)[0]
+
 
 def read_genre_class_data(
     file_path: Path,
