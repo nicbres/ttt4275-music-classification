@@ -1,7 +1,8 @@
-
 import numpy as np
 import matplotlib.pyplot as plt
 from sklearn import preprocessing
+
+import source.mappings
 
 
 def correlations_plot(X, colset=None, colstart=None, colend=None):
@@ -34,15 +35,13 @@ def correlations_plot(X, colset=None, colstart=None, colend=None):
     plt.title('Correlation Matrix', fontsize=16)
     plt.show()
 
-def principal_components_reduction(X, genres, features=None, feature_start=None, feature_end=None):
-    
-    if features is not None:
-        X_PCA = X.loc[:,features]
-    elif feature_start is not None and feature_end is not None:
-        X_PCA = X.iloc[:,feature_start:feature_end]
-    else:
-        X_PCA = X.iloc[:,1:65]
-    
+
+def principal_components_reduction(
+    X,
+    genres=source.mappings.GENRES.values(),
+    features=source.mappings.MUSIC_FEATURES_ALL,
+):
+    X_PCA = X.loc[:,features]
     minmax_scaling = preprocessing.MinMaxScaler()
     X_minmax = minmax_scaling.fit_transform(X_PCA)
 
@@ -55,6 +54,19 @@ def principal_components_reduction(X, genres, features=None, feature_start=None,
     Sigma = np.diag(S)
     T = U @ Sigma
 
+    return T
+
+
+def principal_components_reduction_plot(
+    X,
+    genres=source.mappings.GENRES.values(),
+    features=source.mappings.MUSIC_FEATURES_ALL,
+):
+    T = principal_components_reduction(
+        X=X,
+        genres=genres,
+        features=features,
+    )
     fig = plt.figure()
     ax = fig.add_subplot()
 

@@ -12,7 +12,7 @@ import numpy as np
 import source.data_handling
 import source.diy_classifiers
 import source.descriptive_statistics
-import source.sklearn_knn
+import source.sklearn_reference
 
 
 _COLORS = {
@@ -184,7 +184,7 @@ def error_rates_vs_params(ks, ps, training_data, test_data, diy=True):
     if diy:
         classifier = source.diy_classifiers.kNN
     else:
-        classifier = source.sklearn_knn.predict
+        classifier = source.sklearn_reference.KNN.predict
 
     error_rate_ks = np.empty((len(ks,)))
     error_rate_ps = np.empty((len(ps,)))
@@ -220,8 +220,8 @@ def error_rates_vs_params(ks, ps, training_data, test_data, diy=True):
     ax2.set_xlabel("p - order of Minkowski norm")
     ax2.set_ylabel("Error percentage [%]")
 
-    ax1.plot(ks, error_rate_ks)
-    ax2.plot(ps, error_rate_ps)
+    ax1.plot(ks, error_rate_ks, "o-")
+    ax2.plot(ps, error_rate_ps, "o-")
 
     ax1.grid()
     ax2.grid()
