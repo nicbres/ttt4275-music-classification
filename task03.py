@@ -10,8 +10,8 @@ import pandas as pd
 
 def PI(y_true, y_hat, which_pi=None):
     # TODO: implement different PIs
-    source.descriptive_statistics.classifier_error_rate(y_hat, y_true)
-    return PI
+    perform_ind = source.descriptive_statistics.classifier_error_rate(y_hat, y_true)     
+    return perform_ind
 
 def cross_validate(training_x, training_y, nr_segments=5):
 
@@ -125,3 +125,8 @@ training_data, _ = source.data_handling.prepare_data(
 
 
 add_features_PIs = model_structure_selection(training_set=training_data, fast_features=features_task_3, add_features=add_features)
+
+best_ind = np.argmin(add_features_PIs)
+
+print(add_features_PIs)
+print(f"The best extra feature to add is: {add_features[best_ind]} with an Error Rate of: {add_features_PIs[best_ind]}")
