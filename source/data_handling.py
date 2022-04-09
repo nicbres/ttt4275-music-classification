@@ -21,7 +21,7 @@ GENRE_CLASS_DATA_30S = DATA_DIR / "GenreClassData_30s.txt"
 class Dataset:
     x: pd.DataFrame
     y: pd.DataFrame
-    track_ids: pd.DataFrame
+    track_ids: pd.DataFrame = None
 
     @property
     def data_frame(self):
