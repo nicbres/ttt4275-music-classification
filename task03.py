@@ -10,20 +10,15 @@ import pandas as pd
 
 def PI(y_true, y_hat, which_pi=None):
     # TODO: implement different PIs
-<<<<<<< HEAD
-    perform_ind = source.descriptive_statistics.classifier_error_rate(y_hat, y_true)     
+    perform_ind = source.descriptive_statistics.classifier_error_rate(y_hat, y_true)
     return perform_ind
-=======
-    source.descriptive_statistics.classifier_error_rate(y_hat, y_true)
-    return PI
->>>>>>> 36a2aa0de022066dc9fca5698a28aca4272b9219
 
 def cross_validate(training_x, training_y, nr_segments=5):
 
     genres = list(set(training_y))
     #x_split = np.array_split(training_x, nr_segments)
     y_split = np.array_split(training_y, nr_segments)
-    
+
     # genres split is a list containing 10 single_genre_split lists
     # single_genre_split is a list containing 5 lists of data_frames
     genres_split_x = []
@@ -47,8 +42,6 @@ def cross_validate(training_x, training_y, nr_segments=5):
     PI_segments = np.empty((nr_segments, ))
 
     for i in range(nr_segments):
-        
-        # 
         all_genres_x_val = []
         all_genres_y_val = []
 
@@ -67,7 +60,7 @@ def cross_validate(training_x, training_y, nr_segments=5):
 
             single_genre_split_x.pop(i)
             single_genre_split_y.pop(i)
-            
+
             for k in range(len(single_genre_split_y)):
                 all_genres_x_train.append(single_genre_split_x[k])
                 all_genres_y_train.append(single_genre_split_y[k])
@@ -81,19 +74,19 @@ def cross_validate(training_x, training_y, nr_segments=5):
         # Make into correct object for kNN classifier
         train_data_n = source.data_handling.Dataset(x=train_data_x, y=train_data_y)
         val_data_n = source.data_handling.Dataset(x=val_data_x, y=val_data_y)
-        
+
         # Estimate y
         y_hat_n = source.diy_classifiers.kNN(k=5, p=2, train_data=train_data_n, test_data=val_data_n)
 
         # Performance index computation
         PI_n = PI(val_data_y, y_hat_n)
         PI_segments[i] = PI_n
-    
+
     return np.average(PI_segments)
-        
+
 
 def model_structure_selection(training_set, fast_features, add_features):
-    
+
     add_features_PIs = np.empty((len(add_features), ))
 
     for i, add_feature in enumerate(add_features):
@@ -106,36 +99,32 @@ def model_structure_selection(training_set, fast_features, add_features):
             training_y=training_set.y,
         )
         add_features_PIs[i] = feature_PI
-        
+
     return add_features_PIs
 
 
+if __name__ == "__main__":
+    data_version = source.data_handling.GENRE_CLASS_DATA_30S
+    data_set = source.data_handling.read_genre_class_data(data_version)
 
-data_version = source.data_handling.GENRE_CLASS_DATA_30S
-data_set = source.data_handling.read_genre_class_data(data_version)
+    features_task_3 = ["spectral_rolloff_mean", "tempo", "spectral_centroid_mean", "mfcc_1_mean"]
+    remove_feature_ind = 1
+    features_task_3.pop(remove_feature_ind)
 
-features_task_3 = ["spectral_rolloff_mean", "tempo", "spectral_centroid_mean", "mfcc_1_mean"]
-remove_feature_ind = 1
-features_task_3.pop(remove_feature_ind)
+    add_features = source.mappings.MUSIC_FEATURES_ALL.copy()
+    for feature in features_task_3:
+        add_features.remove(feature)
 
-add_features = source.mappings.MUSIC_FEATURES_ALL.copy()
-for feature in features_task_3:
-    add_features.remove(feature)    
-
-# Extract the dataset with full features here, will chose specific in model order selection function
-training_data, _ = source.data_handling.prepare_data(
-        data_frame=data_set,
-        features=source.mappings.MUSIC_FEATURES_ALL,
-    )
+    # Extract the dataset with full features here, will chose specific in model order selection function
+    training_data, _ = source.data_handling.prepare_data(
+            data_frame=data_set,
+            features=source.mappings.MUSIC_FEATURES_ALL,
+        )
 
 
-<<<<<<< HEAD
-add_features_PIs = model_structure_selection(training_set=training_data, fast_features=features_task_3, add_features=add_features)
+    add_features_PIs = model_structure_selection(training_set=training_data, fast_features=features_task_3, add_features=add_features)
 
-best_ind = np.argmin(add_features_PIs)
+    best_ind = np.argmin(add_features_PIs)
 
-print(add_features_PIs)
-print(f"The best extra feature to add is: {add_features[best_ind]} with an Error Rate of: {add_features_PIs[best_ind]}")
-=======
-add_features_PIs = model_structure_selection(training_set=training_data, fast_features=features_task_3, add_features=add_features)
->>>>>>> 36a2aa0de022066dc9fca5698a28aca4272b9219
+    print(add_features_PIs)
+    print(f"The best extra feature to add is: {add_features[best_ind]} with an Error Rate of: {add_features_PIs[best_ind]}")
