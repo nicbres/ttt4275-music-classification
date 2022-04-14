@@ -1,12 +1,9 @@
 import statistics
 
 import numpy as np
-<<<<<<< HEAD
-=======
 import pandas as pd
 from statistics import mode
 from sklearn.cross_decomposition import PLSRegression
->>>>>>> d670bd4 (Implement the PLSR_DA in diy_classifiers and example how to use it in task04)
 
 import source.data_handling as dh
 
@@ -88,8 +85,6 @@ class kNN:
                 predicted_genres[i] = most_frequent_neighbour[0]
 
         return predicted_genres
-<<<<<<< HEAD
-=======
 
 
 
@@ -114,4 +109,3 @@ class PLSR_DA:
         predicted_genres = [self.ohe_cols[np.argmax(y_hat_pred[i])] for i in range(len(y_hat_pred))]
         
         return predicted_genres
->>>>>>> d670bd4 (Implement the PLSR_DA in diy_classifiers and example how to use it in task04)
