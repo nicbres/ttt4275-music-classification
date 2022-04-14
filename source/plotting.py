@@ -175,7 +175,7 @@ def confusion_matrix(
     )
 
     disp.plot(
-        xticks_rotation=45.0,
+        xticks_rotation=90.0,
         ax=ax,
     )
 
@@ -342,6 +342,7 @@ def misclassifications_scatter_plot(
             plot_index += 1
 
     fig.legend(handles, labels)
+    fig.tight_layout()
 
     plt.show()
 
