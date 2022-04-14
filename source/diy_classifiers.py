@@ -1,7 +1,9 @@
+import statistics
+
 import numpy as np
-from statistics import mode
 
 import source.data_handling as dh
+
 
 def p_norm(p, vec):
     return np.sum(np.abs(vec)**p) ** (1/p)
@@ -65,9 +67,18 @@ class kNN:
             genres_of_kNN = self.train_data.y.iloc[smallest_indices]
 
             # Pick the most frequent genre
-            most_frequent_neighbour = mode(genres_of_kNN)
+            most_frequent_neighbour = statistics.multimode(genres_of_kNN)
 
-            # Assign that genre to the track
-            predicted_genres[i] = most_frequent_neighbour
+            if len(most_frequent_neighbour) > 1:
+                # when there are multiple classes with same amount of neighbours compute
+                # sum of distances for each class and use class with minimum
+                neighbour_distances = np.zeros(len(most_frequent_neighbour))
+                for genre_index, genre in enumerate(most_frequent_neighbour):
+                    for smallest_index in smallest_indices:
+                        if self.train_data.y.iloc[smallest_index] == genre:
+                            neighbour_distances[genre_index] += distances.iloc[smallest_index]
+                predicted_genres[i] = most_frequent_neighbour[np.argmin(neighbour_distances)]
+            else:
+                predicted_genres[i] = most_frequent_neighbour[0]
 
         return predicted_genres
