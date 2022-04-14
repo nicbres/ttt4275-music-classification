@@ -331,8 +331,10 @@ def misclassifications_scatter_plot(
                 ax=axes,
                 log_misclassified=log_misclassified if plot_index == 0 else False,
             )
-            axes.legend()
+            handles, labels = axes.get_legend_handles_labels()
             plot_index += 1
+
+    fig.legend(handles, labels)
 
     plt.show()
 
