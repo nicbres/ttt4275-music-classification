@@ -1,6 +1,12 @@
 import statistics
 
 import numpy as np
+<<<<<<< HEAD
+=======
+import pandas as pd
+from statistics import mode
+from sklearn.cross_decomposition import PLSRegression
+>>>>>>> d670bd4 (Implement the PLSR_DA in diy_classifiers and example how to use it in task04)
 
 import source.data_handling as dh
 
@@ -82,3 +88,30 @@ class kNN:
                 predicted_genres[i] = most_frequent_neighbour[0]
 
         return predicted_genres
+<<<<<<< HEAD
+=======
+
+
+
+class PLSR_DA:
+
+    def __init__(self, n_components:int):
+        self.n_components = n_components
+
+    def fit(self, data_frame_x, data_frame_y):
+        # One-hot encode the y variables
+        one_hot_output_training = pd.get_dummies(data_frame_y)
+        self.ohe_cols = one_hot_output_training.columns
+
+        # Train and store a PLS Regression model from x to OHE ys
+        self.PLSR_model = PLSRegression(n_components=self.n_components)
+        self.PLSR_model.fit(data_frame_x, one_hot_output_training)
+
+    def predict(self, test_data):
+        predicted_genres = np.empty((len(test_data),), dtype=object)
+
+        y_hat_pred = self.PLSR_model.predict(test_data)
+        predicted_genres = [self.ohe_cols[np.argmax(y_hat_pred[i])] for i in range(len(y_hat_pred))]
+        
+        return predicted_genres
+>>>>>>> d670bd4 (Implement the PLSR_DA in diy_classifiers and example how to use it in task04)
