@@ -188,31 +188,30 @@ def confusion_matrix(
 def error_rates_vs_params(ks, ps, training_data, test_data, diy=True):
     actual_genres = test_data.y
 
-    if diy:
-        classifier = source.diy_classifiers.kNN
-    else:
-        classifier = source.sklearn_reference.KNN.predict
-
     error_rate_ks = np.empty((len(ks,)))
     error_rate_ps = np.empty((len(ps,)))
 
     for i, k in enumerate(ks):
-        predicted_genres = classifier(
-            training_data,
-            test_data=test_data,
-            k=k,
-            p=2,
-        )
+        if diy:
+            classifier = source.diy_classifiers.kNN(k=k,p=2)
+        else:
+            classifier = sklearn.neighbors.KNeighborsClassifier(n_neighbors=k,p=2)
+
+        classifier.fit(training_data.x, training_data.y)
+        predicted_genres = classifier.predict(test_data.x)
+
         error_percentage = source.descriptive_statistics.classifier_error_rate(predicted_genres, actual_genres)
         error_rate_ks[i] = error_percentage
         
     for j, p in enumerate(ps):
-        predicted_genres = classifier(
-            training_data,
-            test_data=test_data,
-            k=5,
-            p=p,
-        )
+        if diy:
+            classifier = source.diy_classifiers.kNN(k=5, p=p)
+        else:
+            classifier = sklearn.neighbors.KNeighborsClassifier(n_neighbors=5, p=p)
+
+        classifier.fit(training_data.x, training_data.y)
+        predicted_genres = classifier.predict(test_data.x)
+
         error_percentage = source.descriptive_statistics.classifier_error_rate(predicted_genres, actual_genres)
         error_rate_ps[j] = error_percentage
     
