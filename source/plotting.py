@@ -4,6 +4,7 @@ import math
 from typing import Iterable
 
 import matplotlib.pyplot as plt
+import matplotlib.colors
 import numpy as np
 import pandas
 import sklearn.metrics
@@ -357,11 +358,33 @@ def feature_distribution_histogram(
         row_index, col_index = divmod(index, 2)
         axs[row_index, col_index].set_title(feature)
 
-        for genre in genres:
-            axs[row_index, col_index].hist(data_frame[data_frame["Genre"] == genre][feature], nr_of_bins, density=True, histtype='bar', color=_COLORS[genre], label=genre)
+        lower_bound = int(data_frame[feature].min())
+        upper_bound = int(data_frame[feature].max())
+        number_of_bins = 20
+        bin_width = (upper_bound - lower_bound) / number_of_bins
+        bins = np.arange(lower_bound, upper_bound, bin_width)
 
-        axs[row_index, col_index].legend()
+        for genre in genres:
+            edge_color = matplotlib.colors.to_rgb(_COLORS[genre]) + (1.0,)
+            face_color = matplotlib.colors.to_rgb(_COLORS[genre]) + (0.6,)
+
+            data = data_frame[data_frame["Genre"] == genre][feature]
+
+
+            axs[row_index, col_index].hist(
+                data,
+                bins,
+                density=True,
+                histtype='bar',
+                edgecolor=edge_color,
+                facecolor=face_color,
+                label=genre,
+            )
+
         axs[row_index, col_index].grid()
+
+    handles, labels = axs[0, 0].get_legend_handles_labels()
+    fig.legend(handles, labels)
 
     fig.tight_layout()
     plt.show()
