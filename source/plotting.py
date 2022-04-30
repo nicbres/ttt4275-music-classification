@@ -156,6 +156,7 @@ def threed_scatter(
 def confusion_matrix(
     actual_genres: Iterable,
     predicted_genres: Iterable,
+    cmap: str = "viridis",
 ):
     fig, ax = plt.subplots(1,1)
 
@@ -177,6 +178,7 @@ def confusion_matrix(
     disp.plot(
         xticks_rotation=90.0,
         ax=ax,
+        cmap=cmap,
     )
 
     plt.title(f"Error Rate: {error_percentage:.2f}%")
@@ -340,7 +342,7 @@ def misclassifications_scatter_plot(
             handles, labels = axes.get_legend_handles_labels()
             plot_index += 1
 
-    fig.legend(handles, labels)
+    fig.legend(handles, labels, loc="lower right")
     fig.tight_layout()
 
     plt.show()
