@@ -3,7 +3,6 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Iterable, Optional, Tuple
 
-import librosa
 import numpy as np
 import pandas as pd
 
@@ -109,23 +108,3 @@ def prepare_data(
 
     return training_data, test_data
 
-
-def read_wav_file(
-    file_path: Path,
-    duration: int = 30,  # [s]
-):
-    audio_data, sample_rate = librosa.load(file_path, duration=duration)
-    return audio_data, sample_rate
-
-
-def split_audio_data_into_segments(
-    audio_data: np.ndarray,
-    sample_rate: float,
-    segment_length: int,  # [s]
-):
-    samples_per_segment = sample_rate * segment_length
-    number_of_segments = len(audio_data) // samples_per_segment
-
-    audio_data = audio_data[: number_of_segments * samples_per_segment]
-
-    return np.reshape(audio_data, (number_of_segments, samples_per_segment))
