@@ -211,6 +211,7 @@ if __name__ == "__main__":
             actual_genres=y_true_task1,
             predicted_genres=y_pred_task1,
             output_name=f"2b_misinterpreted{features_name}",
+            cmap=cmap,
         )
 
     features = ["spectral_rolloff_mean", "tempo", "spectral_centroid_mean", "mfcc_1_mean"]
@@ -246,5 +247,6 @@ if __name__ == "__main__":
             actual_genres=y_true_task1,
             predicted_genres=y_pred_task1,
             output_name=f"2b_{len(features)}{features_name}",
+            cmap=cmap,
         )
 
