@@ -156,12 +156,17 @@ def threed_scatter(
 def confusion_matrix(
     actual_genres: Iterable,
     predicted_genres: Iterable,
+    cmap: str = "viridis",
+    show_error_rate: bool = False,
+    output_name: str = None,
+    colorbar: bool = False,
 ):
     fig, ax = plt.subplots(1,1)
 
     labels = np.sort(list(set(actual_genres)))
 
     error_percentage = source.descriptive_statistics.classifier_error_rate(predicted_genres, actual_genres)
+    logging.info(f"Error Rate: {error_percentage:.2f}%")
 
     confusion_matrix = sklearn.metrics.confusion_matrix(
         y_true=actual_genres,
@@ -177,11 +182,18 @@ def confusion_matrix(
     disp.plot(
         xticks_rotation=90.0,
         ax=ax,
+        cmap=cmap,
+        colorbar=colorbar,
     )
 
-    plt.title(f"Error Rate: {error_percentage:.2f}%")
+    if show_error_rate:
+        plt.title(f"Error Rate: {error_percentage:.2f}%")
 
     fig.tight_layout()
+    if output_name is not None:
+        file_name = output_name + "_confusion_" + f"{error_percentage:.3f}_error_rate" + ".png"
+        plt.savefig(file_name)
+
     plt.show()
 
 
@@ -290,6 +302,7 @@ def misclassifications_scatter_plot(
     genres: Iterable,
     use_color_dict: bool = True,
     log_misclassified: bool = False,
+    output_name: str = None,
 ):
     """Generates a scatter plot from the given genres and features."""
     number_of_features = len(features)
@@ -303,7 +316,7 @@ def misclassifications_scatter_plot(
         number_of_subplots_cols -= 1
 
     logging.debug(f"Plot Shape: {number_of_subplots_rows}, {number_of_subplots_cols}")
-    fig, axs = plt.subplots(number_of_subplots_rows, number_of_subplots_cols)
+    fig, axs = plt.subplots(number_of_subplots_rows, number_of_subplots_cols, figsize=(16, 8))
     plt.set_loglevel("info")
 
     logging.debug("Generating multiple scatter plots")
@@ -340,8 +353,15 @@ def misclassifications_scatter_plot(
             handles, labels = axes.get_legend_handles_labels()
             plot_index += 1
 
-    fig.legend(handles, labels)
-    fig.tight_layout()
+    fig.legend(handles, labels, loc="lower right")
+    plt.tight_layout(pad=2.0, w_pad=2.2, h_pad=1.2)
+
+    if output_name is not None:
+        genre_name = ""
+        for genre in genres:
+            genre_name += f"_{genre}"
+        file_name = output_name + "_misclassified" + genre_name + ".png"
+        plt.savefig(file_name)
 
     plt.show()
 
@@ -351,6 +371,7 @@ def feature_distribution_histogram(
     features: Iterable,
     genres: Iterable,
     nr_of_bins: int = 10,
+    output_name: str = None
 ):
     fig, axs = plt.subplots(2, 2)
 
@@ -385,8 +406,14 @@ def feature_distribution_histogram(
 
     handles, labels = axs[0, 0].get_legend_handles_labels()
     fig.legend(handles, labels)
-
     fig.tight_layout()
+    if output_name is not None:
+        genre_name = ""
+        for genre in genres:
+            genre_name += f"_{genre}"
+        file_name = output_name + "_feature_distribution" + genre_name + ".png"
+        plt.savefig(file_name)
+
     plt.show()
 
 def task04_plots(cum_var, CV_vars, pc_PIs):

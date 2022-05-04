@@ -64,6 +64,7 @@ def reduce_features(
 
 def prepare_data(
     data_frame: pd.DataFrame,
+    scaler = None,
     genres: Optional[Iterable] = None,
     features: Optional[Iterable] = None,
 ) -> Tuple[Dataset, Dataset]:
@@ -106,6 +107,11 @@ def prepare_data(
         y=genre_reduced_test_data["Genre"],
         track_ids=genre_reduced_test_data["Track ID"],
     )
+
+    if scaler is not None:
+        scaler.fit(training_data.x)
+        training_data.x[features] = scaler.transform(training_data.x[features])
+        test_data.x[features] = scaler.transform(test_data.x[features])
 
     return training_data, test_data
 

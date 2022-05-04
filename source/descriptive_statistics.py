@@ -4,6 +4,7 @@ import matplotlib.pyplot as plt
 from sklearn import preprocessing
 
 import source.mappings
+import source.diy_classifiers
 
 
 def correlations_plot(X, colset=None, colstart=None, colend=None):
@@ -166,7 +167,6 @@ def cross_validate(training_x, training_y, nr_segments=5, classifier=source.diy_
         PI_segments[i] = PI_n
     
     return np.average(PI_segments)
-
 
 
 def cross_validate_pca(training_x, training_y, nr_segments=5, classifier=source.diy_classifiers.kNN):
