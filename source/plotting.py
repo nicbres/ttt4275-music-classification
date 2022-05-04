@@ -388,3 +388,25 @@ def feature_distribution_histogram(
 
     fig.tight_layout()
     plt.show()
+
+def task04_plots(cum_var, CV_vars, pc_PIs):
+    nr_features = np.shape(cum_var)[0]
+    x_axis = np.linspace(1, nr_features, nr_features)
+
+    fig0 = plt.figure()
+    plt.title("Explained Variance Plots")
+    plt.plot(x_axis, cum_var, label="Explained Variance")
+    plt.plot(x_axis, CV_vars, label="Explained Variance through Cross-Validation")
+    plt.xlabel("PCA/SVD Truncation Order")
+    plt.ylabel("Fraction of Explained Variance")
+    plt.grid()
+
+    fig1 = plt.figure()
+    plt.title("Error Rate as a Function of Principle Component Nr")
+    plt.plot(x_axis, pc_PIs, label="Cross Validation Error Rate for the PLSR-DA Classifier")
+    plt.xlabel("PCA/SVD Truncation Order")
+    plt.ylabel("Error Rate [%]")
+    plt.grid()
+
+    plt.legend()
+    plt.show()

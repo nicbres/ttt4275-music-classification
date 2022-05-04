@@ -10,7 +10,7 @@ import numpy as np
 import pandas as pd
 
 
-def model_structure_selection(training_set, fast_features, add_features):
+def task3_feature_selection(training_set, fast_features, add_features):
     
     add_features_PIs = np.empty((len(add_features), ))
     kNN_classifier = source.diy_classifiers.kNN(k=5, p=2)
@@ -50,9 +50,11 @@ if __name__ == "__main__":
         )
 
 
-    add_features_PIs = model_structure_selection(training_set=training_data, fast_features=features_task_3, add_features=add_features)
+    add_features_PIs = task3_feature_selection(training_set=training_data, fast_features=features_task_3, add_features=add_features)
 
     best_ind = np.argmin(add_features_PIs)
+    five_best_inds = np.argpartition(add_features_PIs, 5)[:5]
 
     print(add_features_PIs)
     print(f"The best extra feature to add is: {add_features[best_ind]} with an Error Rate of: {add_features_PIs[best_ind]}")
+    print(f"The best 5 extra features are: {[add_features[i] for i in five_best_inds]} with Error Rates of: {[add_features_PIs[i] for i in five_best_inds]}")

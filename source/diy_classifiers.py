@@ -99,7 +99,7 @@ class PLSR_DA:
         self.ohe_cols = one_hot_output_training.columns
 
         # Train and store a PLS Regression model from x to OHE ys
-        self.PLSR_model = PLSRegression(n_components=self.n_components)
+        self.PLSR_model = PLSRegression(n_components=self.n_components, scale=False)
         self.PLSR_model.fit(data_frame_x, one_hot_output_training)
 
     def predict(self, test_data):
